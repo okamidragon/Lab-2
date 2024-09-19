@@ -1,71 +1,40 @@
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.List;
 
 public class EventListPanel extends JPanel {
-    private List<Event> events;
-    private JPanel controlPanel;
-    private JPanel displayPanel;
-    private JComboBox<String> sortDropDown;
-    private JCheckBox filterDisplay;
-    private JButton addEventButton;
+    private final ArrayList<Event> events; // List of events to display
+    private final JPanel displayPanel; // Panel to hold the event displays
 
-    public EventListPanel() {
-        events = new ArrayList<>();
+    public EventListPanel(ArrayList<Event> events) {
+        this.events = events;
         setLayout(new BorderLayout());
-
-        // Initialize controlPanel and add components
-        controlPanel = new JPanel();
-        add(controlPanel, BorderLayout.NORTH);
-
-        sortDropDown = new JComboBox<>(new String[]{"Sort by Name", "Sort by Date"});
-        controlPanel.add(sortDropDown);
-
-        filterDisplay = new JCheckBox("Filter Complete Events");
-        controlPanel.add(filterDisplay);
-
-        addEventButton = new JButton("Add Event");
-        controlPanel.add(addEventButton);
-
-        // Initialize displayPanel to show events
         displayPanel = new JPanel();
         displayPanel.setLayout(new BoxLayout(displayPanel, BoxLayout.Y_AXIS));
-        JScrollPane scrollPane = new JScrollPane(displayPanel);
-        add(scrollPane, BorderLayout.CENTER);
 
-        // Add event listeners for sorting, filtering, and adding events
-        sortDropDown.addActionListener(e -> sortEvents());
-        filterDisplay.addActionListener(e -> filterEvents());
-        addEventButton.addActionListener(e -> openAddEventDialog());
+        add(new JScrollPane(displayPanel), BorderLayout.CENTER);
+
+        JButton addEventButton = new JButton("Add Event");
+        addEventButton.addActionListener(e -> {
+            new AddEventModel(this).setVisible(true);
+        });
+
+        add(addEventButton, BorderLayout.SOUTH);
+        updateEventList(); // Initial population of events
     }
 
     public void addEvent(Event event) {
         events.add(event);
-        updateDisplay();
+        updateEventList(); // Refresh the displayed list of events
     }
 
-    private void updateDisplay() {
-        displayPanel.removeAll();
+    public void updateEventList() {
+        displayPanel.removeAll(); // Clear previous event panels
         for (Event event : events) {
             EventPanel eventPanel = new EventPanel(event);
             displayPanel.add(eventPanel);
         }
-        revalidate();
-        repaint();
-    }
-
-    private void sortEvents() {
-        // Implement sorting logic here
-        updateDisplay();
-    }
-
-    private void filterEvents() {
-        // Implement filtering logic here
-        updateDisplay();
-    }
-
-    private void openAddEventDialog() {
-        new AddEventModel(this).setVisible(true);
+        displayPanel.revalidate();
+        displayPanel.repaint(); // Refresh the display
     }
 }
