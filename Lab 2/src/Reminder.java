@@ -1,4 +1,4 @@
-import java.util.Date;
+/*import java.util.Date;
 
 public class Reminder extends Event implements Completable {
     private boolean complete = false;
@@ -11,7 +11,7 @@ public class Reminder extends Event implements Completable {
     @Override
     public String getName() {
         // Provide a concrete implementation
-        return "Reminder: " + getBaseName() + " at " + getDateTime();
+        return "Reminder: " + super.getName() + " at " + getDateTime();
     }
 
     // Implement Completable interface methods
@@ -29,4 +29,4 @@ public class Reminder extends Event implements Completable {
     public String toString() {
         return getName() + " | Complete: " + isComplete();
     }
-}
+}*/
