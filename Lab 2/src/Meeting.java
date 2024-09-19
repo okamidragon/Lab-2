@@ -1,62 +1,49 @@
 import java.util.Date;
 
 public class Meeting extends Event implements Completable {
+    private Date endDateTime; // The end time of the meeting
+    private String location; // Location of the meeting
     private boolean complete = false;
-    private Date endDateTime;
-    private String location;
 
     // Constructor
-    public Meeting(String name, Date dateTime, Date endDateTime, String location) {
-        super(name, dateTime);
-        this.endDateTime = endDateTime;
-        this.location = location;
+    public Meeting(String name, Date startDateTime, Date endDateTime, String location) {
+        super(name, startDateTime); // Call the superclass constructor
+        this.endDateTime = endDateTime; // Set the end dateTime
+        this.location = location; // Set the location of the meeting
     }
 
     @Override
     public String getName() {
-        return "Meeting: " + getBaseName() + " at " + getDateTime() + " until " + getEndTime() + " in " + getLocation();
+        return name; // Return the name of the meeting
     }
 
-    // Implement Completable interface methods
+    public Date getEndDateTime() {
+        return endDateTime; // Return the end time of the meeting
+    }
+
+    public int getDuration() {
+        return (int) ((endDateTime.getTime() - dateTime.getTime()) / 1000 / 60); // Duration in minutes
+    }
+
+    public void setEndDateTime(Date endDateTime) {
+        this.endDateTime = endDateTime; // Set the end time of the meeting
+    }
+
+    public String getLocation() {
+        return location; // Return the location of the meeting
+    }
+
+    public void setLocation(String location) {
+        this.location = location; // Set the location of the meeting
+    }
+
     @Override
     public void complete() {
-        this.complete = true;
+        this.complete = true; // Set completion status
     }
 
     @Override
     public boolean isComplete() {
-        return this.complete;
-    }
-
-    // Getter and Setter for endDateTime
-    public Date getEndTime() {
-        return endDateTime;
-    }
-
-    public void setEndTime(Date endDateTime) {
-        this.endDateTime = endDateTime;
-    }
-
-    // Getter and Setter for location
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    // Method to calculate duration in minutes
-    public int getDuration() {
-        if (endDateTime != null && getDateTime() != null) {
-            long durationMillis = endDateTime.getTime() - getDateTime().getTime();
-            return (int) (durationMillis / (1000 * 60)); // Convert milliseconds to minutes
-        }
-        return 0;
-    }
-
-    @Override
-    public String toString() {
-        return getName() + " | Duration: " + getDuration() + " minutes | Complete: " + isComplete();
+        return this.complete; // Return completion status
     }
 }
