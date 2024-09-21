@@ -1,40 +1,70 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class EventListPanel extends JPanel {
     private final ArrayList<Event> events; // List of events to display
-    private final JPanel displayPanel; // Panel to hold the event displays
+    private final JPanel displayPanel; // Panel to hold the EventPanels
+    private JComboBox<String> sortDropDown; // For sorting events
+    private JCheckBox filterCompleted; // To filter completed tasks
 
     public EventListPanel(ArrayList<Event> events) {
         this.events = events;
         setLayout(new BorderLayout());
-        displayPanel = new JPanel();
-        displayPanel.setLayout(new BoxLayout(displayPanel, BoxLayout.Y_AXIS));
 
-        add(new JScrollPane(displayPanel), BorderLayout.CENTER);
+        // Control panel
+        JPanel controlPanel = new JPanel();
+        controlPanel.setLayout(new FlowLayout());
+
+        // Sort dropdown
+        sortDropDown = new JComboBox<>(new String[]{"Sort by Name", "Sort by Date"});
+        sortDropDown.addActionListener(e -> sortEvents());
+        controlPanel.add(sortDropDown);
+
+        // Filter checkbox
+        filterCompleted = new JCheckBox("Hide Completed");
+        filterCompleted.addActionListener(e -> updateEventList());
+        controlPanel.add(filterCompleted);
 
         JButton addEventButton = new JButton("Add Event");
-        addEventButton.addActionListener(e -> {
-            new AddEventModel(this).setVisible(true);
-        });
+        addEventButton.addActionListener(e -> new AddEventModal(this).setVisible(true));
+        controlPanel.add(addEventButton);
 
-        add(addEventButton, BorderLayout.SOUTH);
-        updateEventList(); // Initial population of events
+        add(controlPanel, BorderLayout.NORTH);
+
+        // Display panel
+        displayPanel = new JPanel();
+        displayPanel.setLayout(new BoxLayout(displayPanel, BoxLayout.Y_AXIS));
+        JScrollPane scrollPane = new JScrollPane(displayPanel);
+        add(scrollPane, BorderLayout.CENTER);
     }
 
     public void addEvent(Event event) {
         events.add(event);
-        updateEventList(); // Refresh the displayed list of events
+        updateEventList();
     }
 
-    public void updateEventList() {
-        displayPanel.removeAll(); // Clear previous event panels
+    private void updateEventList() {
+        displayPanel.removeAll();
         for (Event event : events) {
-            EventPanel eventPanel = new EventPanel(event);
-            displayPanel.add(eventPanel);
+            if (!filterCompleted.isSelected() || !(event instanceof Completable && ((Completable) event).isComplete())) {
+                EventPanel eventPanel = new EventPanel(event);
+                displayPanel.add(eventPanel);
+            }
         }
         displayPanel.revalidate();
-        displayPanel.repaint(); // Refresh the display
+        displayPanel.repaint();
+    }
+
+    private void sortEvents() {
+        if (sortDropDown.getSelectedIndex() == 0) {
+            Collections.sort(events, Comparator.comparing(Event::getName));
+        } else {
+            Collections.sort(events, Comparator.comparing(Event::getDateTime));
+        }
+        updateEventList();
     }
 }
