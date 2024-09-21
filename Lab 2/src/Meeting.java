@@ -1,49 +1,47 @@
-import java.util.Date;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class Meeting extends Event implements Completable {
-    private Date endDateTime; // The end time of the meeting
-    private String location; // Location of the meeting
-    private boolean complete = false;
+    private LocalDateTime endDateTime;
+    private String location;
+    private boolean complete;
 
-    // Constructor
-    public Meeting(String name, Date startDateTime, Date endDateTime, String location) {
-        super(name, startDateTime); // Call the superclass constructor
-        this.endDateTime = endDateTime; // Set the end dateTime
-        this.location = location; // Set the location of the meeting
+    public Meeting(String name, LocalDateTime startDateTime, LocalDateTime endDateTime, String location) {
+        super(name, startDateTime);
+        this.endDateTime = endDateTime;
+        this.location = location;
+        this.complete = false;
     }
 
-    @Override
     public String getName() {
-        return name; // Return the name of the meeting
+        return name;
     }
 
-    public Date getEndDateTime() {
-        return endDateTime; // Return the end time of the meeting
-    }
-
-    public int getDuration() {
-        return (int) ((endDateTime.getTime() - dateTime.getTime()) / 1000 / 60); // Duration in minutes
-    }
-
-    public void setEndDateTime(Date endDateTime) {
-        this.endDateTime = endDateTime; // Set the end time of the meeting
+    public LocalDateTime getEndDateTime() {
+        return endDateTime;
     }
 
     public String getLocation() {
-        return location; // Return the location of the meeting
+        return location;
+    }
+
+    public void setEndTime(LocalDateTime endDateTime) {
+        this.endDateTime = endDateTime;
     }
 
     public void setLocation(String location) {
-        this.location = location; // Set the location of the meeting
+        this.location = location;
     }
 
-    @Override
+    public Duration getDuration() {
+        return Duration.between(dateTime, endDateTime);
+    }
+
     public void complete() {
-        this.complete = true; // Set completion status
+        complete = true;
     }
-
-    @Override
+    
     public boolean isComplete() {
-        return this.complete; // Return completion status
+        return complete;
     }
 }
