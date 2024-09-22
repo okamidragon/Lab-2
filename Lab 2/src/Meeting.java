@@ -13,6 +13,7 @@ public class Meeting extends Event implements Completable {
         this.complete = false;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -40,7 +41,7 @@ public class Meeting extends Event implements Completable {
     public void complete() {
         complete = true;
     }
-    
+
     public boolean isComplete() {
         return complete;
     }
