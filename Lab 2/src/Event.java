@@ -23,7 +23,6 @@ public abstract class Event implements Comparable<Event> {
         this.name = name;
     }
 
-    @Override
     public int compareTo(Event e) {
         return this.dateTime.compareTo(e.dateTime);
     }
