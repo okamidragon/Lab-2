@@ -18,6 +18,11 @@ public class AddEventModal extends JDialog {
         JTextField endDateField = new JTextField(); // End date for Meeting
         JTextField locationField = new JTextField(); // Location for Meeting
 
+        String[] eventTypes = {"Deadline", "Meeting"};
+        JComboBox<String> eventTypeDropdown = new JComboBox<>(eventTypes);
+
+        add(new JLabel("Event Type:"));
+        add(eventTypeDropdown);
         add(new JLabel("Name:"));
         add(nameField);
         add(new JLabel("Start Date (yyyy-MM-dd HH:mm):"));
@@ -36,8 +41,9 @@ public class AddEventModal extends JDialog {
                 LocalDateTime dateTime = LocalDateTime.parse(dateField.getText(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
                 LocalDateTime endDateTime = LocalDateTime.parse(endDateField.getText(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
                 String location = locationField.getText();
+                String selectedType = (String) eventTypeDropdown.getSelectedItem();
 
-                if (location != null && !location.isEmpty()) {
+                if ("Meeting".equals(selectedType) && location != null && !location.isEmpty()) {
                     Meeting meeting = new Meeting(name, dateTime, endDateTime, location);
                     eventListPanel.addEvent(meeting);
                 } else {
