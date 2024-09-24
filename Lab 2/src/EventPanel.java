@@ -28,7 +28,7 @@ public class EventPanel extends JPanel {
     }
 
     private void updateDisplay() {
-        String displayText = String.format("Name: %s\nDate: %s\nComplete: %s",
+        String displayText = String.format("Name: %s\n Date: %s\n Complete: %s",
                 event.getName(), event.getDateTime(), (event instanceof Completable && ((Completable) event).isComplete()));
         removeAll();
         add(new JLabel(displayText), BorderLayout.CENTER);
