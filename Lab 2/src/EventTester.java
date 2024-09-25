@@ -3,6 +3,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+// Logic provided by Dr. Baarsch
 public class EventTester {
 
     static LocalDateTime deadline = LocalDateTime.of(2024, 12, 7, 17, 0);
