@@ -27,8 +27,9 @@ public class EventPanel extends JPanel {
         add(completeButton, BorderLayout.SOUTH);
     }
 
+    // Logic to flag an event as completed
     private void updateDisplay() {
-        String displayText = String.format("Name: %s\n Date: %s\n Complete: %s",
+        String displayText = String.format("Name: %s \nDate: %s \nComplete: %s",
                 event.getName(), event.getDateTime(), (event instanceof Completable && ((Completable) event).isComplete()));
         removeAll();
         add(new JLabel(displayText), BorderLayout.CENTER);
