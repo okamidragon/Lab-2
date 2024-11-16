@@ -1,1 +1,2 @@
-testing
+Observer Pattern: For decoupling UI updates from event data changes and keeping all components in sync.
+Composite Pattern: For handling hierarchical event data and representing it in the UI consistently.
