@@ -1,105 +1,118 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
-public class EventListPanel extends JPanel {
-    private final ArrayList<Event> events; // List of events to display
-    private final JPanel displayPanel; // Panel to hold the EventPanels
-    private JComboBox<String> sortDropDown; // For sorting events
-    private JCheckBox filterCompleted; // To filter completed tasks
-    private JCheckBox hideDeadlines; // To hide deadlines
-    private JCheckBox hideMeetings; // To hide meetings
+public class EventListPanel extends JPanel implements Observer {
+    private EventCollection eventCollection;
+    private JPanel displayPanel;
 
-    public EventListPanel(ArrayList<Event> events) {
-        this.events = events;
+    // Filters and sorting flags
+    private boolean hideCompleted = false;
+    private boolean hideDeadlines = false;
+    private boolean sortByName = false;
+    private boolean sortByDate = false;
+    private boolean sortAscending = true;
+
+    public EventListPanel(EventCollection eventCollection) {
+        this.eventCollection = eventCollection;
+        eventCollection.addObserver(this);
+
         setLayout(new BorderLayout());
 
-        // Control panel
+        // Control panel for sorting/filtering
         JPanel controlPanel = new JPanel();
         controlPanel.setLayout(new FlowLayout());
 
-        // Sort dropdown
-        sortDropDown = new JComboBox<>(new String[]{"Sort by Name", "Sort by Reverse Name", "Sort by Date"});
-        sortDropDown.addActionListener(e -> sortEvents());
-        controlPanel.add(sortDropDown);
-
-        // Filter checkbox to hide completed tasks
-        filterCompleted = new JCheckBox("Hide Completed");
-        filterCompleted.addActionListener(e -> updateEventList());
-        controlPanel.add(filterCompleted);
-
-        // Checkbox to hide deadlines
-        hideDeadlines = new JCheckBox("Hide Deadlines");
-        hideDeadlines.addActionListener(e -> updateEventList());
-        controlPanel.add(hideDeadlines);
-
-        // Checkbox to hide meetings
-        hideMeetings = new JCheckBox("Hide Meetings");
-        hideMeetings.addActionListener(e -> updateEventList());
-        controlPanel.add(hideMeetings);
-
+        // Add Event Button
         JButton addEventButton = new JButton("Add Event");
         addEventButton.addActionListener(e -> new AddEventModal(this).setVisible(true));
         controlPanel.add(addEventButton);
 
+        // Sorting by Name or Date
+        JComboBox<String> sortComboBox = new JComboBox<>(new String[]{"Sort by Name", "Sort by Date"});
+        sortComboBox.addActionListener(e -> {
+            sortByName = sortComboBox.getSelectedIndex() == 0;
+            sortByDate = !sortByName;
+            updateEventList();
+        });
+        controlPanel.add(sortComboBox);
+
+        // Ascending/Descending Sorting
+        JCheckBox ascendingCheckBox = new JCheckBox("Ascending", true);
+        ascendingCheckBox.addActionListener(e -> {
+            sortAscending = ascendingCheckBox.isSelected();
+            updateEventList();
+        });
+        controlPanel.add(ascendingCheckBox);
+
+        // Hide Completed Events Checkbox
+        JCheckBox hideCompletedCheckBox = new JCheckBox("Hide Completed Events");
+        hideCompletedCheckBox.addActionListener(e -> {
+            hideCompleted = hideCompletedCheckBox.isSelected();
+            updateEventList();
+        });
+        controlPanel.add(hideCompletedCheckBox);
+
+        // Hide Deadlines Checkbox
+        JCheckBox hideDeadlinesCheckBox = new JCheckBox("Hide Deadlines");
+        hideDeadlinesCheckBox.addActionListener(e -> {
+            hideDeadlines = hideDeadlinesCheckBox.isSelected();
+            updateEventList();
+        });
+        controlPanel.add(hideDeadlinesCheckBox);
+
         add(controlPanel, BorderLayout.NORTH);
 
-        // Display panel
+        // Display panel for showing events
         displayPanel = new JPanel();
         displayPanel.setLayout(new BoxLayout(displayPanel, BoxLayout.Y_AXIS));
         JScrollPane scrollPane = new JScrollPane(displayPanel);
         add(scrollPane, BorderLayout.CENTER);
+
+        // Initialize the list with current events
+        updateEventList(); 
     }
 
-    public void addEvent(Event event) {
-        events.add(event);
+    // Update the display when notified
+    @Override
+    public void update() {
         updateEventList();
     }
 
-    // Logic to hide events based off of filters
     private void updateEventList() {
         displayPanel.removeAll();
-        for (Event event : events) {
-            boolean shouldDisplay = true;
+        List<Event> events = eventCollection.getEvents();
 
-            // Check if we need to hide completed tasks
-            if (filterCompleted.isSelected() && event instanceof Completable && ((Completable) event).isComplete()) {
-                shouldDisplay = false;
-            }
-
-            // Check if we need to hide deadlines
-            if (hideDeadlines.isSelected() && event instanceof Deadline) {
-                shouldDisplay = false;
-            }
-
-            // Check if we need to hide meetings
-            if (hideMeetings.isSelected() && event instanceof Meeting) {
-                shouldDisplay = false;
-            }
-
-            // If the event passes all filters, add it to the display
-            if (shouldDisplay) {
-                EventPanel eventPanel = new EventPanel(event);
-                displayPanel.add(eventPanel);
-            }
+        // Apply filters
+        if (hideCompleted) {
+            events = events.stream().filter(event -> !(event instanceof Completable) || !((Completable) event).isComplete()).collect(Collectors.toList());
         }
+
+        if (hideDeadlines) {
+            events = events.stream().filter(event -> !(event instanceof Deadline)).collect(Collectors.toList());
+        }
+
+        // Sort events
+        if (sortByName) {
+            events.sort(Comparator.comparing(Event::getName));
+        } else if (sortByDate) {
+            events.sort(Comparator.comparing(Event::getDateTime));
+        }
+
+        // Apply ascending/descending sorting
+        if (!sortAscending) {
+            Collections.reverse(events);
+        }
+
+        // Display events
+        for (Event event : events) {
+            EventPanel eventPanel = new EventPanel(event);
+            displayPanel.add(eventPanel);
+        }
+
         displayPanel.revalidate();
         displayPanel.repaint();
-    }
-
-    // Checkboxes to sort the panel
-    private void sortEvents() {
-        int selectedIndex = sortDropDown.getSelectedIndex();
-        if (selectedIndex == 0) {
-            Collections.sort(events, Comparator.comparing(Event::getName));
-        } else if (selectedIndex == 1) {
-            Collections.sort(events, Comparator.comparing(Event::getName).reversed());
-        } else {
-            Collections.sort(events, Comparator.comparing(Event::getDateTime));
-        }
-        updateEventList();
     }
 }
