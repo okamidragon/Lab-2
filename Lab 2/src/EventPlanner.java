@@ -23,6 +23,11 @@ public class EventPlanner {
         eventCollection.addEvent(deadline);
         eventCollection.addEvent(meeting);
 
+        // Create the modal and pass the same event collection
+        JButton addEventButton = new JButton("Add Event");
+        addEventButton.addActionListener(e -> new AddEventModal(eventListPanel, eventCollection).setVisible(true));
+        frame.add(addEventButton, BorderLayout.SOUTH);
+
         frame.setVisible(true);
     }
 }
