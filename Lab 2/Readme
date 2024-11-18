@@ -1,2 +1,25 @@
-Observer Pattern: For decoupling UI updates from event data changes and keeping all components in sync.
-Composite Pattern: For handling hierarchical event data and representing it in the UI consistently.
+Observer Pattern: I will be using this pattern to decouple UI updates from event data changes and keeping all components in sync.
+Composite Pattern: I will be implimenting this patter to handle hierarchical event data and represent it in the UI consistently.
+
+While Composite pattern is not one of the design patterns that is part of our required reading,
+I figured it would be good to learn more than just what is required and felt that thie pattern would be a good choice for my program. 
+
+Observer Implementation:
+  The Subject interface is defined with methods to register, remove, and notify observers.
+
+  EventCollection implements the Subject interface. It holds a list of events and a list of observers. 
+  When an event is added or removed, it calls notifyObservers() to notify all registered observers (such as EventListPanel).
+ 
+  The Observer interface defines the update() method that is called by the Subject (in this case, EventCollection) when its state changes. 
+  The EventListPanel class implements this interface.
+
+Compostie Implementation:
+  The Composite pattern is a structural design pattern used to treat individual objects and compositions of objects uniformly.
+
+  The Event class is the base class, and all types of events (Deadline, Meeting) inherit from it. 
+  It defines common properties (like name and dateTime) and methods (like getName() and getDateTime()) that all event types will have in common.
+
+  Deadline and Meeting are Leaf classes that extend Event.
+
+  I will be creating a new class called Event Collection. 
+  It will hold a collection of Event objects (both Deadline and Meeting), and it can add, remove, and notify the observers of changes in its list of events.
