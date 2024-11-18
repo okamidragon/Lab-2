@@ -27,8 +27,10 @@ public class EventListPanel extends JPanel implements Observer {
 
         // Add Event Button
         JButton addEventButton = new JButton("Add Event");
-        addEventButton.addActionListener(e -> new AddEventModal(this).setVisible(true));
-        controlPanel.add(addEventButton);
+        addEventButton.addActionListener(e -> {
+            // Open the modal with the correct event collection
+            new AddEventModal(this, eventCollection).setVisible(true);
+        });
 
         // Sorting by Name or Date
         JComboBox<String> sortComboBox = new JComboBox<>(new String[]{"Sort by Name", "Sort by Date"});
@@ -72,7 +74,7 @@ public class EventListPanel extends JPanel implements Observer {
         add(scrollPane, BorderLayout.CENTER);
 
         // Initialize the list with current events
-        updateEventList(); 
+        updateEventList();
     }
 
     // Update the display when notified
