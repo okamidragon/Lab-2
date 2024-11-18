@@ -7,9 +7,9 @@ public class AddEventModal extends JDialog {
     private EventListPanel eventListPanel;
     private EventCollection eventCollection;
 
-    public AddEventModal(EventListPanel eventListPanel) {
+    public AddEventModal(EventListPanel eventListPanel, EventCollection eventCollection) {
         this.eventListPanel = eventListPanel;
-        this.eventCollection = new EventCollection();
+        this.eventCollection = eventCollection;
 
         setTitle("Add Event");
         setSize(400, 300);
